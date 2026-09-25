@@ -1,0 +1,92 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Android wrapper
+        uses: actions/checkout@v4
+        with:
+          path: android
+
+      - name: Checkout upstream Fichero
+        uses: actions/checkout@v4
+        with:
+          repository: casper-aurai/fichero-printer
+          ref: c7e060f111ae830e3db2fde403170ef3df3b7ddb
+          path: upstream
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: upstream/web/package-lock.json
+
+      - name: Patch upstream for Android
+        working-directory: android
+        run: python3 scripts/patch_upstream.py
+
+      - name: Build bundled web editor
+        working-directory: upstream/web
+        run: |
+          npm ci
+          npm run check
+          npm run build
+
+      - name: Copy web bundle into APK assets
+        run: |
+          rm -rf android/app/src/main/assets/web
+          mkdir -p android/app/src/main/assets/web
+          cp -a upstream/web/dist/. android/app/src/main/assets/web/
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify APK has no INTERNET permission
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -1)"
+          "$AAPT" dump permissions "$APK" | tee /tmp/permissions.txt
+          if grep -q "android.permission.INTERNET" /tmp/permissions.txt; then
+            echo "INTERNET permission unexpectedly present"
+            exit 1
+          fi
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Fichero-Offline-debug.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fichero-Offline-APK
+          path: Fichero-Offline-debug.apk
+          if-no-files-found: error
