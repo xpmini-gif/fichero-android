@@ -40,6 +40,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewClientCompat;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -107,12 +110,27 @@ public class MainActivity extends Activity {
         webView.setBackgroundColor(Color.WHITE);
         webView.addJavascriptInterface(new NativeBridge(), "FicheroAndroid");
 
-        webView.setWebViewClient(new WebViewClient() {
+        final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
+                .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+                .build();
+
+        webView.setWebViewClient(new WebViewClientCompat() {
+            @Override
+            public android.webkit.WebResourceResponse shouldInterceptRequest(
+                    WebView view,
+                    WebResourceRequest request
+            ) {
+                return assetLoader.shouldInterceptRequest(request.getUrl());
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
+                if ("appassets.androidplatform.net".equals(uri.getHost())) {
+                    return false;
+                }
                 String scheme = uri.getScheme();
-                if ("file".equals(scheme) || "data".equals(scheme) || "blob".equals(scheme)) {
+                if ("data".equals(scheme) || "blob".equals(scheme)) {
                     return false;
                 }
                 try {
@@ -152,7 +170,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        webView.loadUrl("file:///android_asset/web/index.html");
+        webView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html");
     }
 
     @Override
@@ -526,7 +544,7 @@ public class MainActivity extends Activity {
                 }
             });
             printWebView.loadDataWithBaseURL(
-                    "file:///android_asset/web/",
+                    "https://appassets.androidplatform.net/assets/web/",
                     html,
                     "text/html",
                     "UTF-8",
