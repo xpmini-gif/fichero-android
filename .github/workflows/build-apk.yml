@@ -110,6 +110,13 @@ jobs:
             cp android/app/build/outputs/apk/release/app-release-unsigned.apk Fichero-Offline-release-unsigned.apk
           fi
 
+      - name: Bundle apksigner tool
+        shell: bash
+        run: |
+          mkdir -p apksigner-tool/lib
+          cp "$ANDROID_HOME/build-tools/35.0.0/apksigner" apksigner-tool/
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" apksigner-tool/lib/
+
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
@@ -117,4 +124,6 @@ jobs:
           path: |
             Fichero-Offline-debug.apk
             Fichero-Offline-release-unsigned.apk
-          if-no-files-found: error
+            Fichero-Offline-release.apk
+            apksigner-tool/
+          if-no-files-found: warn
