@@ -9,6 +9,15 @@ client_src = root / "web-patches" / "client.android.ts"
 client_dst = upstream / "web" / "src" / "lib" / "fichero" / "client.ts"
 shutil.copy2(client_src, client_dst)
 
+component_patches = {
+    root / "web-patches" / "AppShell.android.svelte": upstream / "web" / "src" / "components" / "shell" / "AppShell.svelte",
+    root / "web-patches" / "PanelShell.android.svelte": upstream / "web" / "src" / "components" / "shell" / "PanelShell.svelte",
+    root / "web-patches" / "Toolbar.android.svelte": upstream / "web" / "src" / "components" / "shell" / "Toolbar.svelte",
+    root / "web-patches" / "PrinterStatus.android.svelte": upstream / "web" / "src" / "components" / "print" / "PrinterStatus.svelte",
+}
+for src, dst in component_patches.items():
+    shutil.copy2(src, dst)
+
 file_utils = upstream / "web" / "src" / "utils" / "file_utils.ts"
 text = file_utils.read_text()
 
@@ -43,6 +52,14 @@ if print_marker not in text:
 text = text.replace(print_marker, print_replacement, 1)
 file_utils.write_text(text)
 
+utils_file = upstream / "web" / "src" / "lib" / "fichero" / "utils.ts"
+text = utils_file.read_text()
+old_transport = '      webBluetooth: typeof navigator !== "undefined" && "bluetooth" in navigator,'
+new_transport = '      webBluetooth: (typeof navigator !== "undefined" && "bluetooth" in navigator) || typeof (globalThis as any).FicheroAndroid !== "undefined",'
+if old_transport not in text:
+    raise SystemExit("Bluetooth transport patch point not found")
+utils_file.write_text(text.replace(old_transport, new_transport, 1))
+
 vite = upstream / "web" / "vite.config.ts"
 text = vite.read_text()
 old = '  base: process.env.GITHUB_PAGES ? "/fichero-printer/" : "/",'
@@ -51,14 +68,12 @@ if old not in text:
     raise SystemExit("Vite base patch point not found")
 vite.write_text(text.replace(old, new, 1))
 
-# The upstream UI intentionally refuses widths below 900px. On Android we keep
-# the exact desktop editor/functionality, but expose it through a 1000px virtual
-# viewport that WebView scales to the device. Landscape orientation is especially
-# comfortable, while portrait remains fully usable with pinch zoom.
+# Native mobile layout: use the real device width and keep page zoom disabled.
+# The editor canvas itself auto-fits whenever the available area changes.
 index_html = upstream / "web" / "index.html"
 text = index_html.read_text()
 old_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
-new_viewport = '<meta name="viewport" content="width=1000, initial-scale=1.0, minimum-scale=0.25, maximum-scale=3.0, user-scalable=yes" />'
+new_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />'
 if old_viewport not in text:
     raise SystemExit("Viewport patch point not found")
 index_html.write_text(text.replace(old_viewport, new_viewport, 1))
