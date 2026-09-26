@@ -71,13 +71,13 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Build debug APK
+      - name: Build APKs
         working-directory: android
-        run: gradle --no-daemon :app:assembleDebug
+        run: gradle --no-daemon :app:assembleDebug :app:assembleRelease
 
       - name: Verify APK has no INTERNET permission
         run: |
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
           AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -1)"
           "$AAPT" dump permissions "$APK" | tee /tmp/permissions.txt
           if grep -q "android.permission.INTERNET" /tmp/permissions.txt; then
@@ -85,12 +85,16 @@ jobs:
             exit 1
           fi
 
-      - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Fichero-Offline-debug.apk
+      - name: Collect APKs
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Fichero-Offline-debug.apk
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk Fichero-Offline-release-unsigned.apk
 
-      - name: Upload APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: Fichero-Offline-APK
-          path: Fichero-Offline-debug.apk
+          name: Fichero-Offline-APKs
+          path: |
+            Fichero-Offline-debug.apk
+            Fichero-Offline-release-unsigned.apk
           if-no-files-found: error
