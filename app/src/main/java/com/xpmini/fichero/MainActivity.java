@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelUuid;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
@@ -294,8 +295,22 @@ public class MainActivity extends Activity {
                 try { name = result.getScanRecord() != null ? result.getScanRecord().getDeviceName() : null; }
                 catch (Exception ignored) { name = null; }
             }
-            if (name == null) return;
-            if (!(name.startsWith("FICHERO") || name.startsWith("D11s_"))) return;
+            boolean nameMatch = name != null && (
+                    name.startsWith("FICHERO")
+                            || name.startsWith("D11s_")
+                            || name.startsWith("D11")
+                            || name.toUpperCase().contains("AIYIN")
+            );
+
+            boolean serviceMatch = false;
+            try {
+                if (result.getScanRecord() != null && result.getScanRecord().getServiceUuids() != null) {
+                    serviceMatch = result.getScanRecord().getServiceUuids().contains(new ParcelUuid(SERVICE_UUID));
+                }
+            } catch (Exception ignored) {
+            }
+
+            if (!nameMatch && !serviceMatch) return;
 
             stopScan();
             try {
