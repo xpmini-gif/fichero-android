@@ -41,6 +41,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewClientCompat;
 import android.widget.Toast;
@@ -91,12 +95,33 @@ public class MainActivity extends Activity {
         bluetoothAdapter = manager.getAdapter();
 
         root = new FrameLayout(this);
+        root.setBackgroundColor(Color.rgb(21, 24, 25));
+
+        // Android 15+ draws apps edge-to-edge by default. Keep the editor out of
+        // the status/navigation bars and display cutout while preserving the
+        // full WebView area inside those safe bounds.
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+            Insets safe = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+            view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
+            return insets;
+        });
+
         webView = new WebView(this);
         root.addView(webView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
         setContentView(root);
+        ViewCompat.requestApplyInsets(root);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.rgb(21, 24, 25));
+            getWindow().setNavigationBarColor(Color.rgb(21, 24, 25));
+        }
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
