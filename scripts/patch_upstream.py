@@ -51,4 +51,16 @@ if old not in text:
     raise SystemExit("Vite base patch point not found")
 vite.write_text(text.replace(old, new, 1))
 
+# The upstream UI intentionally refuses widths below 900px. On Android we keep
+# the exact desktop editor/functionality, but expose it through a 1000px virtual
+# viewport that WebView scales to the device. Landscape orientation is especially
+# comfortable, while portrait remains fully usable with pinch zoom.
+index_html = upstream / "web" / "index.html"
+text = index_html.read_text()
+old_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
+new_viewport = '<meta name="viewport" content="width=1000, initial-scale=1.0, minimum-scale=0.25, maximum-scale=3.0, user-scalable=yes" />'
+if old_viewport not in text:
+    raise SystemExit("Viewport patch point not found")
+index_html.write_text(text.replace(old_viewport, new_viewport, 1))
+
 print("Android patches applied")
