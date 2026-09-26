@@ -71,6 +71,21 @@ jobs:
         with:
           gradle-version: "8.9"
 
+      - name: Configure stable release signing when secrets exist
+        env:
+          FICHERO_SIGNING_KEY_B64: ${{ secrets.FICHERO_SIGNING_KEY_B64 }}
+          FICHERO_SIGNING_PASSWORD: ${{ secrets.FICHERO_SIGNING_PASSWORD }}
+        shell: bash
+        run: |
+          if [ -n "$FICHERO_SIGNING_KEY_B64" ] && [ -n "$FICHERO_SIGNING_PASSWORD" ]; then
+            printf '%s' "$FICHERO_SIGNING_KEY_B64" | base64 --decode > "$GITHUB_WORKSPACE/android/fichero-release.p12"
+            echo "FICHERO_SIGNING_STORE_FILE=$GITHUB_WORKSPACE/android/fichero-release.p12" >> "$GITHUB_ENV"
+            echo "FICHERO_SIGNING_PASSWORD=$FICHERO_SIGNING_PASSWORD" >> "$GITHUB_ENV"
+            echo "Stable release signing enabled"
+          else
+            echo "Signing secrets not configured; release APK will be unsigned"
+          fi
+
       - name: Build APKs
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug :app:assembleRelease
@@ -86,9 +101,14 @@ jobs:
           fi
 
       - name: Collect APKs
+        shell: bash
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk Fichero-Offline-debug.apk
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk Fichero-Offline-release-unsigned.apk
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk Fichero-Offline-release.apk
+          else
+            cp android/app/build/outputs/apk/release/app-release-unsigned.apk Fichero-Offline-release-unsigned.apk
+          fi
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
