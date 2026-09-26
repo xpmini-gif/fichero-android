@@ -1,9 +1,9 @@
-def ficheroSigningStore = System.getenv("FICHERO_SIGNING_STORE_FILE")
-def ficheroSigningPassword = System.getenv("FICHERO_SIGNING_PASSWORD")
-
 plugins {
     id "com.android.application"
 }
+
+def ficheroSigningStore = System.getenv("FICHERO_SIGNING_STORE_FILE")
+def ficheroSigningPassword = System.getenv("FICHERO_SIGNING_PASSWORD")
 
 android {
     namespace "com.xpmini.fichero"
