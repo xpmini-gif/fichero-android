@@ -101,8 +101,6 @@ public class MainActivity extends Activity {
                 == android.content.res.Configuration.UI_MODE_NIGHT_YES;
         int surfaceColor = dark ? Color.rgb(20, 18, 24) : Color.rgb(253, 247, 255);
         root.setBackgroundColor(surfaceColor);
-        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightStatusBars(!dark);
-        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightNavigationBars(!dark);
 
         // Android 15+ draws apps edge-to-edge by default. Keep the editor out of
         // the status/navigation bars and display cutout while preserving the
@@ -124,6 +122,9 @@ public class MainActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
         setContentView(root);
+        // The decor view must exist before acquiring the platform insets controller.
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightStatusBars(!dark);
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightNavigationBars(!dark);
         ViewCompat.requestApplyInsets(root);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
