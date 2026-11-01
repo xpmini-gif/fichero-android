@@ -53,19 +53,19 @@
     </div>
 
     {#if mobilePanel !== "canvas"}
-      <section class="h-[38dvh] min-h-[210px] max-h-[360px] shrink-0 overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-surface-1)]">
-        <div class="flex h-8 items-center justify-between border-b border-[var(--color-border-soft)] px-3">
+      <section class="md-sheet h-[42dvh] min-h-0 max-h-[420px] shrink-0 overflow-hidden">
+        <div class="md-sheet-heading flex items-center justify-between">
           <span class="text-[11px] font-medium uppercase tracking-wider text-[var(--color-ink-secondary)]">
-            {mobilePanel === "objects" ? "Objects" : "Properties"}
+            {mobilePanel === "objects" ? "Obiekty" : "Właściwości"}
           </span>
           <button
-            class="rounded px-2 py-1 text-[11px] text-[var(--color-ink-secondary)]"
+            class="md-sheet-close"
             onclick={() => mobilePanel = "canvas"}
           >
-            Close
+            Zamknij
           </button>
         </div>
-        <div class="h-[calc(100%-32px)] overflow-y-auto overscroll-contain p-2">
+        <div class="h-[calc(100%-56px)] overflow-y-auto overscroll-contain p-2">
           {#if mobilePanel === "objects"}
             <LeftPanel />
           {:else}
@@ -75,28 +75,18 @@
       </section>
     {/if}
 
-    <nav class="grid h-12 shrink-0 grid-cols-3 border-t border-[var(--color-border)] bg-[var(--color-surface-1)]">
-      <button
-        class="flex items-center justify-center gap-1.5 text-[11px] {mobilePanel === 'objects' ? 'text-[var(--color-accent)] bg-[var(--color-accent-subtle)]' : 'text-[var(--color-ink-secondary)]'}"
-        onclick={() => mobilePanel = mobilePanel === "objects" ? "canvas" : "objects"}
-      >
-        <Icon icon={Sidebar} size="md" />
-        Objects
-      </button>
-      <button
-        class="flex items-center justify-center gap-1.5 border-x border-[var(--color-border)] text-[11px] {mobilePanel === 'canvas' ? 'text-[var(--color-accent)] bg-[var(--color-accent-subtle)]' : 'text-[var(--color-ink-secondary)]'}"
-        onclick={() => mobilePanel = "canvas"}
-      >
-        <Icon icon={SquaresFour} size="md" />
-        Canvas
-      </button>
-      <button
-        class="flex items-center justify-center gap-1.5 text-[11px] {mobilePanel === 'properties' ? 'text-[var(--color-accent)] bg-[var(--color-accent-subtle)]' : 'text-[var(--color-ink-secondary)]'}"
-        onclick={() => mobilePanel = mobilePanel === "properties" ? "canvas" : "properties"}
-      >
-        <Icon icon={SlidersHorizontal} size="md" />
-        Properties
-      </button>
+    <nav class="md-navigation" aria-label="Edytor etykiety">
+      {#each [
+        { id: "objects", label: "Obiekty", icon: Sidebar },
+        { id: "canvas", label: "Etykieta", icon: SquaresFour },
+        { id: "properties", label: "Właściwości", icon: SlidersHorizontal },
+      ] as destination}
+        <button class="md-destination" aria-pressed={mobilePanel === destination.id}
+          onclick={() => mobilePanel = destination.id as "canvas" | "objects" | "properties"}>
+          <span class="md-destination-icon"><Icon icon={destination.icon} size="lg" /></span>
+          {destination.label}
+        </button>
+      {/each}
     </nav>
   </div>
 {:else}
@@ -115,7 +105,7 @@
       <Pane defaultSize={20} minSize={15} maxSize={30}>
         <div class="flex h-full flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-1)]">
           <div class="flex items-center justify-between border-b border-[var(--color-border-soft)] px-2 py-1.5">
-            <span class="text-[11px] font-medium uppercase tracking-wider text-[var(--color-ink-secondary)]">Objects</span>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-[var(--color-ink-secondary)]">Obiekty</span>
             <button
               class="flex h-5 w-5 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-tertiary)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink-secondary)]"
               onclick={toggleLeft}
@@ -151,7 +141,7 @@
       <Pane defaultSize={20} minSize={18} maxSize={33}>
         <div class="flex h-full flex-col border-l border-[var(--color-border)] bg-[var(--color-surface-1)]">
           <div class="flex items-center justify-between border-b border-[var(--color-border-soft)] px-2 py-1.5">
-            <span class="text-[11px] font-medium uppercase tracking-wider text-[var(--color-ink-secondary)]">Properties</span>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-[var(--color-ink-secondary)]">Właściwości</span>
             <button
               class="flex h-5 w-5 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-tertiary)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink-secondary)]"
               onclick={toggleRight}

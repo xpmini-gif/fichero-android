@@ -1,0 +1,58 @@
+/* Material 3 roles. Local assets only; follows the Android color preference. */
+:root {
+  color-scheme: light dark;
+  --color-surface-0: #fdf7ff; --color-surface-1: #f7f2fa;
+  --color-surface-2: #ece6f0; --color-surface-3: #e6e0e9;
+  --color-ink-primary: #1d1b20; --color-ink-secondary: #49454f;
+  --color-ink-tertiary: #625d69; --color-ink-muted: #79747e;
+  --color-accent: #6750a4; --color-accent-hover: #523b8b;
+  --color-accent-subtle: #eaddff; --color-on-accent: #ffffff;
+  --color-on-accent-container: #21005d;
+  --color-status-ok: #28633d; --color-status-success: #28633d;
+  --color-status-warn: #795900; --color-status-danger: #b3261e;
+  --color-border: #cac4d0; --color-border-soft: #e7e0ec;
+  --color-border-emphasis: #79747e; --color-border-focus: #6750a4;
+  --color-control-bg: #fffbfe; --color-control-border: #79747e;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 28px;
+  --toolbar-h: 64px; --statusbar-h: 32px;
+  --text-xs: 12px; --text-sm: 14px; --text-base: 14px; --text-lg: 16px;
+  --shadow-lg: 0 6px 20px #1d1b2029;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface-0: #141218; --color-surface-1: #1d1b20;
+    --color-surface-2: #2b2930; --color-surface-3: #36343b;
+    --color-ink-primary: #e6e0e9; --color-ink-secondary: #cac4d0;
+    --color-ink-tertiary: #b0a9b7; --color-ink-muted: #938f99;
+    --color-accent: #d0bcff; --color-accent-hover: #e2d3ff;
+    --color-accent-subtle: #4f378b; --color-on-accent: #381e72;
+    --color-on-accent-container: #eaddff;
+    --color-status-ok: #91d5a5; --color-status-success: #91d5a5;
+    --color-status-warn: #edc46c; --color-status-danger: #f2b8b5;
+    --color-border: #49454f; --color-border-soft: #36343b;
+    --color-border-emphasis: #938f99; --color-border-focus: #d0bcff;
+    --color-control-bg: #211f26; --color-control-border: #938f99;
+  }
+}
+body { line-height: 1.5; }
+button, input, select, textarea { font: inherit; }
+button { touch-action: manipulation; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--color-border-focus); outline-offset: 3px;
+}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]), select, textarea {
+  min-height: 48px; border-radius: 8px; padding-inline: 12px;
+}
+input[type=checkbox], input[type=radio], input[type=range] { accent-color: var(--color-accent); }
+[role=dialog] { border-radius: 28px; }
+.md-topbar { min-height: 64px; background: var(--color-surface-1); padding: 8px 12px; }
+.md-title { font-size: 20px; font-weight: 500; letter-spacing: 0; }
+.md-sheet { border-radius: 28px 28px 0 0; background: var(--color-surface-2); box-shadow: 0 -2px 12px #00000014; }
+.md-sheet-heading { height: 56px; padding: 0 16px; font-size: 16px; }
+.md-sheet-close { min-width: 48px; min-height: 48px; border-radius: 24px; color: var(--color-accent); }
+.md-navigation { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); min-height: 80px; flex-shrink: 0; background: var(--color-surface-2); }
+.md-destination { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 80px; color: var(--color-ink-secondary); font-size: 12px; font-weight: 500; }
+.md-destination-icon { width: 64px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.md-destination[aria-pressed=true] { color: var(--color-ink-primary); font-weight: 700; }
+.md-destination[aria-pressed=true] .md-destination-icon { color: var(--color-on-accent-container); background: var(--color-accent-subtle); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

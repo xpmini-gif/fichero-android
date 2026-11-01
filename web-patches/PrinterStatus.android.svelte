@@ -46,13 +46,13 @@
 {#if $connectionState === "connected"}
   <div class="flex items-center gap-1">
     {#if compact}
-      <Tooltip text={$printerMeta?.model ?? $connectedPrinterName ?? "Connected"}>
+      <Tooltip text={$printerMeta?.model ?? $connectedPrinterName ?? "Połączono"}>
         <div class="flex h-8 w-8 items-center justify-center text-[var(--color-status-success)]">
           <Circle size={9} weight="fill" />
         </div>
       </Tooltip>
     {:else}
-      <Tooltip text={$printerMeta?.model ?? $connectedPrinterName ?? "Connected"}>
+      <Tooltip text={$printerMeta?.model ?? $connectedPrinterName ?? "Połączono"}>
         <div class="flex items-center gap-1.5 px-1.5 text-[11px] text-[var(--color-status-success)]">
           <Circle size={8} weight="fill" />
           <span class="max-w-[120px] truncate text-[var(--color-ink-primary)]">
@@ -61,7 +61,7 @@
         </div>
       </Tooltip>
     {/if}
-    <Tooltip text="Disconnect">
+    <Tooltip text="Rozłącz">
       <Button variant="danger" size="icon" onclick={onDisconnectClicked}>
         <Icon icon={Power} size="sm" />
       </Button>
@@ -70,10 +70,10 @@
 {:else if $connectionState === "connecting"}
   <div class="flex h-9 items-center gap-1 px-1.5 text-[11px] text-[var(--color-ink-tertiary)]">
     <SpinnerGap size={14} class="animate-spin" />
-    {#if !compact}<span>Connecting...</span>{/if}
+    {#if !compact}<span>Łączenie…</span>{/if}
   </div>
 {:else}
-  <Tooltip text={featureSupport.webBluetooth ? "Connect printer" : "Bluetooth unavailable"}>
+  <Tooltip text={featureSupport.webBluetooth ? "Połącz drukarkę" : "Bluetooth niedostępny"}>
     <Button
       variant="secondary"
       size={compact ? "icon" : "md"}
@@ -81,7 +81,7 @@
       onclick={onConnectClicked}
     >
       <Icon icon={Bluetooth} size="md" />
-      {#if !compact}Connect{/if}
+      {#if !compact}Połącz{/if}
     </Button>
   </Tooltip>
 {/if}

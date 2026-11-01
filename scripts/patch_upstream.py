@@ -10,6 +10,7 @@ client_dst = upstream / "web" / "src" / "lib" / "fichero" / "client.ts"
 shutil.copy2(client_src, client_dst)
 
 component_patches = {
+    root / "web-patches" / "Button.android.svelte": upstream / "web" / "src" / "components" / "ui" / "Button.svelte",
     root / "web-patches" / "AppShell.android.svelte": upstream / "web" / "src" / "components" / "shell" / "AppShell.svelte",
     root / "web-patches" / "PanelShell.android.svelte": upstream / "web" / "src" / "components" / "shell" / "PanelShell.svelte",
     root / "web-patches" / "Toolbar.android.svelte": upstream / "web" / "src" / "components" / "shell" / "Toolbar.svelte",
@@ -68,14 +69,18 @@ if old not in text:
     raise SystemExit("Vite base patch point not found")
 vite.write_text(text.replace(old, new, 1))
 
-# Native mobile layout: use the real device width and keep page zoom disabled.
+# Native mobile layout: use device width while preserving accessible page zoom.
 # The editor canvas itself auto-fits whenever the available area changes.
 index_html = upstream / "web" / "index.html"
 text = index_html.read_text()
 old_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
-new_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />'
+new_viewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />'
 if old_viewport not in text:
     raise SystemExit("Viewport patch point not found")
 index_html.write_text(text.replace(old_viewport, new_viewport, 1))
 
 print("Android patches applied")
+
+# Append Material role overrides after upstream Tailwind and theme declarations.
+stylesheet = upstream / "web" / "src" / "app.css"
+stylesheet.write_text(stylesheet.read_text() + "\n" + (root / "web-patches" / "material.android.css").read_text())

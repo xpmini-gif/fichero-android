@@ -13,8 +13,9 @@ android {
         applicationId "com.xpmini.fichero"
         minSdk 26
         targetSdk 35
-        versionCode 5
-        versionName "0.1.4"
+        manifestPlaceholders = [appLabel: "Fichero Offline"]
+        versionCode 7
+        versionName "0.1.6"
     }
 
     if (ficheroSigningStore && ficheroSigningPassword) {
@@ -30,6 +31,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix ".material"
+            manifestPlaceholders = [appLabel: "Fichero Material"]
+        }
         release {
             minifyEnabled false
             if (ficheroSigningStore && ficheroSigningPassword) {

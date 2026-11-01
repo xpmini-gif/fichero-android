@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -92,7 +93,10 @@ jobs:
 
       - name: Verify APK has no INTERNET permission
         run: |
-          APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          if [ ! -f "$APK" ]; then
+            APK=android/app/build/outputs/apk/release/app-release-unsigned.apk
+          fi
           AAPT="$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -1)"
           "$AAPT" dump permissions "$APK" | tee /tmp/permissions.txt
           if grep -q "android.permission.INTERNET" /tmp/permissions.txt; then
