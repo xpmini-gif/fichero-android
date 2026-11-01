@@ -96,7 +96,13 @@ public class MainActivity extends Activity {
         bluetoothAdapter = manager.getAdapter();
 
         root = new FrameLayout(this);
-        root.setBackgroundColor(Color.rgb(21, 24, 25));
+        boolean dark = (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        int surfaceColor = dark ? Color.rgb(20, 18, 24) : Color.rgb(253, 247, 255);
+        root.setBackgroundColor(surfaceColor);
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightStatusBars(!dark);
+        WindowCompat.getInsetsController(getWindow(), root).setAppearanceLightNavigationBars(!dark);
 
         // Android 15+ draws apps edge-to-edge by default. Keep the editor out of
         // the status/navigation bars and display cutout while preserving the
@@ -105,6 +111,7 @@ public class MainActivity extends Activity {
         ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
             Insets safe = insets.getInsets(
                     WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.ime()
                             | WindowInsetsCompat.Type.displayCutout()
             );
             view.setPadding(safe.left, safe.top, safe.right, safe.bottom);
@@ -120,8 +127,8 @@ public class MainActivity extends Activity {
         ViewCompat.requestApplyInsets(root);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.rgb(21, 24, 25));
-            getWindow().setNavigationBarColor(Color.rgb(21, 24, 25));
+            getWindow().setStatusBarColor(surfaceColor);
+            getWindow().setNavigationBarColor(surfaceColor);
         }
 
         WebSettings settings = webView.getSettings();
@@ -138,7 +145,7 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
 
-        webView.setBackgroundColor(Color.WHITE);
+        webView.setBackgroundColor(surfaceColor);
         webView.addJavascriptInterface(new NativeBridge(), "FicheroAndroid");
 
         final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()

@@ -35,16 +35,16 @@
 <svelte:window bind:innerWidth={windowWidth} />
 
 {#if isMobile}
-  <header class="flex h-12 shrink-0 items-center gap-1 border-b border-[var(--color-border)] bg-[var(--color-surface-1)] px-2">
+  <header class="md-topbar flex shrink-0 items-center gap-1">
     <img src="{import.meta.env.BASE_URL}logo.png" alt="Fichero" class="h-7 w-7 rounded" />
-    <div class="flex-1"></div>
+    <span class="md-title flex-1">Fichero</span>
 
-    <Tooltip text="Preview">
+    <Tooltip text="Podgląd">
       <Button variant="secondary" size="icon" onclick={openPreview}>
         <Icon icon={Eye} size="md" />
       </Button>
     </Tooltip>
-    <Tooltip text="Print">
+    <Tooltip text="Drukuj">
       <Button variant="primary" size="icon" disabled={$connectionState !== "connected"} onclick={openPrintNow}>
         <Icon icon={Printer} size="md" />
       </Button>
@@ -99,11 +99,11 @@
     <div class="flex items-center gap-1">
       <Button variant="secondary" size="md" onclick={openPreview}>
         <Icon icon={Eye} size="md" />
-        Preview
+        Podgląd
       </Button>
       <Button variant="primary" size="md" disabled={$connectionState !== "connected"} onclick={openPrintNow}>
         <Icon icon={Printer} size="md" />
-        Print
+        Drukuj
       </Button>
 
       <div class="mx-1 h-4 w-px bg-[var(--color-border)]"></div>

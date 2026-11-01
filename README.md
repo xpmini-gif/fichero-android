@@ -1,30 +1,31 @@
 # Fichero Offline for Android
 
-Offline Android wrapper for the open-source Fichero D11s label-printer project.
+Offline Android wrapper for [Fichero](https://github.com/casper-aurai/fichero-printer).
+Pinned upstream: c7e060f111ae830e3db2fde403170ef3df3b7ddb.
 
-The app bundles the upstream web label designer and adds a native Android Bluetooth LE bridge, so printing works without Web Bluetooth and without the Android INTERNET permission.
+## 0.1.5 — Material 3 interface
 
-Upstream project: https://github.com/casper-aurai/fichero-printer  
-Pinned upstream revision: c7e060f111ae830e3db2fde403170ef3df3b7ddb
-
-## Features
-
-- Full upstream label designer UI
-- Text, images, QR codes, barcodes and vector objects
-- Drag/resize/rotate, layers, undo/redo and local persistence
-- Print preview, threshold/Atkinson/Bayer processing and inversion
-- Copies, density, label type and offsets
-- Native BLE connection to FICHERO / D11s printers
-- Battery/status information and heartbeat
-- Import files through Android's document picker
-- Export PNG/JSON to Downloads/Fichero
-- Android system print hand-off
-- No INTERNET permission; app content is bundled locally
+- Material 3 color roles, system light/dark preference, rounded controls and panels.
+- 48 dp button targets, 80 dp bottom navigation with selected indicators.
+- Polish editor navigation, preview, print and connection actions.
+- Visible keyboard focus, reduced motion support and accessible page zoom.
+- System bar appearance follows the system theme; keyboard insets protect the editor.
+- Existing editor, BLE bridge, local project storage, imports and exports retained.
+- No INTERNET permission and no remote fonts, styles or scripts added.
 
 ## Build
 
-GitHub Actions builds an installable debug APK on every push to main. The workflow first builds the pinned upstream Svelte app, patches Android-specific file export/system print hooks, then packages the result in a local-only WebView shell.
+GitHub Actions checks the pinned Svelte editor with `npm run check`, builds
+the web bundle and assembles debug/release APKs. It checks the final release
+manifest for absence of INTERNET permission. Pull requests also run this build.
 
-## Notes
+The debug APK is installable. Release APKs use the existing signing secrets
+when configured; otherwise the release APK needs signing. An in-place update
+requires the same certificate as the installed version. Export important
+projects before changing installation certificates.
 
-The BLE protocol implementation and web editor come from the upstream Fichero project. This repository contains the Android bridge and build/package integration.
+## Device validation
+
+A successful build does not validate physical BLE printing. Check connection,
+text/image/QR editing, preview, printing, import/export, light/dark mode,
+keyboard visibility, rotation, and a small phone display on a real device.
