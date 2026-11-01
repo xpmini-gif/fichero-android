@@ -13,6 +13,7 @@ android {
         applicationId "com.xpmini.fichero"
         minSdk 26
         targetSdk 35
+        manifestPlaceholders = [appLabel: "Fichero Offline"]
         versionCode 6
         versionName "0.1.5"
     }
@@ -32,7 +33,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".material"
-            resValue "string", "app_name", "Fichero Material"
+            manifestPlaceholders = [appLabel: "Fichero Material"]
         }
         release {
             minifyEnabled false
